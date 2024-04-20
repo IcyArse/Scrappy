@@ -66,13 +66,6 @@ if 't_home.asp' in driver.current_url:
                 driver.get(href_value)
 
                 driver.implicitly_wait(20)
-                #sim_element = driver.find_element(By.XPATH, f"//td[@class='or-score-column' and @data-title='Similarity Score']/a")
-                #print(sim_element)
-                #if sim_element:
-                #    href_value = sim_element.get_attribute('href')
-                    # Find the <a> tag within the <td> with class_name class
-                #    print(f"The href value associated with sim ID is: {href_value}")
-                    #driver.get(href_value)
 
                 link = driver.find_element(By.XPATH, f"//a[@class='similarity-open']")
 
@@ -80,17 +73,20 @@ if 't_home.asp' in driver.current_url:
                 print(driver.current_url)
 
                 driver.maximize_window()
-                
+
                 driver.implicitly_wait(2000)
                 
                 button_link = driver.find_element(By.XPATH, f"//div[@aria-labelledby='sc5748-label' and @class='sc-view sc-button-view popu p-button-view sc-large tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size popup-menu-open']")
                 driver.implicitly_wait(20)
+
                 print(button_link)
+
                 if button_link:
                     button_link.click()
 
                 download_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-download sidebar-download-button sc-first-segment sc-segment-0"
                 link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+                
                 print(link)
 
                 link.click()
