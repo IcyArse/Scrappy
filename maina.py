@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 from getpass import getpass
 import time
 
@@ -12,6 +13,27 @@ password = 'Superman@1000'#getpass("Enter your password: ")
 
 # Prompt user for class ID
 class_id = 43513647#input("Enter the class ID: ")
+
+# Set Chrome options
+chrome_options = Options()
+#chrome_options.add_argument("--disable-infobars")
+#chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--disable-infobars")
+chrome_options.add_argument("--disable-notifications")
+chrome_options.add_argument("--disable-popup-blocking")
+chrome_options.add_argument("--disable-web-security")
+chrome_options.add_argument("--disable-logging")
+chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+# Disable Chrome's automated testing detection
+# chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
+# chrome_options.add_experimental_option('useAutomationExtension', False)
+
+# Initialize Chrome WebDriver with the options
+driver = webdriver.Chrome(options=chrome_options)
 
 # Initialize Chrome WebDriver
 driver = webdriver.Chrome()
@@ -72,26 +94,40 @@ if 't_home.asp' in driver.current_url:
                 link.click()
                 print(driver.current_url)
 
+                time.sleep(5)
+
+                # Switch to the newly opened window
+                new_window_handle = driver.window_handles[-1]
+                driver.switch_to.window(new_window_handle)
+
+                # Maximize the new window
                 driver.maximize_window()
 
-                driver.implicitly_wait(2000)
-                
-                button_link = driver.find_element(By.XPATH, f"//div[@aria-labelledby='sc5748-label' and @class='sc-view sc-button-view popu p-button-view sc-large tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size popup-menu-open']")
-                driver.implicitly_wait(20)
+                # @class='sc-view sc-button-view popu p-button-view sc-large tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size popup-menu-open'
+                #button_link = driver.find_element(By.XPATH, f"//div[@aria-labelledby='sc5748-label']")
+                #driver.implicitly_wait(20)
 
-                print(button_link)
+                #print(button_link)
 
-                if button_link:
-                    button_link.click()
+                #if button_link:
+                #    button_link.click()
 
                 download_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-download sidebar-download-button sc-first-segment sc-segment-0"
                 link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
-                
+
                 print(link)
 
                 link.click()
 
-            time.sleep(100000)
+                time.sleep(2)
+
+                download_class_id = "sc-view sc-list-item-view sc-collection-item sc-item sc-large tii-theme carta btn-link print-download-btn sc-regular-size"
+                link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+
+                print('current file : ',link)
+                link.click()
+
+            time.sleep(60)
         else:
             print(f"No <a> tag found for class ID {class_id}")
     else:
