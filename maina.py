@@ -4,20 +4,26 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from getpass import getpass
 import time
+from dotenv import load_dotenv
+import os
 
-# Prompt user for email and password
-email = 'amran@um.edu.my'#input("Enter your email: ")
+# Load environment variables from credentials.env file
+dotenv_path = os.path.join(os.path.dirname(__file__), 'credentials.env')
+load_dotenv(dotenv_path)
 
-# Securely ask for the password
-password = 'Superman@1000'#getpass("Enter your password: ")
+# Get credentials from environment variables or prompt user
+email = os.getenv("EMAIL") or input("Enter your email: ")
+password = os.getenv("PASSWORD") or getpass("Enter your password: ")
+
 
 # Prompt user for class ID
 class_id = 43513647#input("Enter the class ID: ")
+# Change up this
 
 # Set Chrome options
 chrome_options = Options()
 #chrome_options.add_argument("--disable-infobars")
-chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+#chrome_options.add_argument("--headless")  # Run Chrome in headless mode
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
@@ -35,8 +41,6 @@ chrome_options.add_argument("--disable-features=VizDisplayCompositor")
 # Initialize Chrome WebDriver with the options
 driver = webdriver.Chrome(options=chrome_options)
 
-# Initialize Chrome WebDriver
-driver = webdriver.Chrome()
 
 # Website login URL
 login_url = 'https://www.turnitin.com/login_page.asp'
@@ -133,4 +137,4 @@ if 't_home.asp' in driver.current_url:
     else:
         print(f"Class ID {class_id} not found in the HTML content.")
 else:
-    print('Login failed')
+    print('Login failed')
