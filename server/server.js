@@ -14,6 +14,8 @@ const dataFilePath = path.join(__dirname, "data.json");
 app.post("/api/submit-data", (req, res) => {
   const { email, classId, submissionId } = req.body;
 
+  const { exec } = require('child_process');
+
   try {
     fs.writeFileSync(
       dataFilePath,
@@ -24,6 +26,14 @@ app.post("/api/submit-data", (req, res) => {
     console.error("Error:", err);
     res.status(500).json({ error: "Failed to process the request" });
   }
+  exec('python mainf.py', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+  });
 });
 
 app.listen(PORT, () => {

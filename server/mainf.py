@@ -16,7 +16,7 @@ email_login = os.getenv("EMAIL") #or input("Enter your email: ")
 password = os.getenv("PASSWORD") #or getpass("Enter your password: ")
 
 # Opens the json file
-file = open("tunitfrnt\server\data.json")
+file = open("data.json")
 data = json.load(file)
 
 #Submission ID & paper email
