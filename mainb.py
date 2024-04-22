@@ -15,9 +15,6 @@ load_dotenv(dotenv_path)
 email_login = os.getenv("EMAIL") #or input("Enter your email: ")
 password = os.getenv("PASSWORD") #or getpass("Enter your password: ")
 
-# Prompt user for class ID
-class_id = 43513647  # input("Enter the class ID: ")
-
 file = open("tunitfrnt\server\data.json")
 data = json.load(file)
 
@@ -48,7 +45,6 @@ chrome_options.add_argument("--disable-features=VizDisplayCompositor")
 # Initialize Chrome WebDriver with the options
 driver = webdriver.Chrome(options=chrome_options)
 
-
 # Website login URL
 login_url = 'https://www.turnitin.com/login_page.asp'
 
@@ -74,21 +70,22 @@ driver.implicitly_wait(10)
 if 't_home.asp' in driver.current_url:
     print('Login successful')
 
-    # Find the <td> element with the given class ID
-    td_element = driver.find_element(By.XPATH, f"//td[@class='class_id' and text()='{class_id}']")
+    thesis_href_value = None
 
-    if td_element:
-        # Get the parent <tr> element
-        tr_element = td_element.find_element(By.XPATH, './..')
-        
-        # Find the <a> tag within the <td> with class_name class
-        a_tag = tr_element.find_element(By.XPATH, ".//td[@class='class_name']/a")
+    # Find all <tr> elements
+    tr_elements = driver.find_elements(By.TAG_NAME, "tr")
+    
+    # Loop over each <tr> element
+    for tr_element in tr_elements:
 
-        if a_tag:
-            href_value = a_tag.get_attribute('href')
-            print(f"The href value associated with class ID {class_id} is: {href_value}")
+        # Find the <td> element with the given class ID
+        td_element = driver.find_element(By.XPATH, f"//td[@class='class_name']/a")
 
-            driver.get(href_value)
+        if td_element and td_element.text == "Thesis":
+            thesis_href_value = td_element.get_attribute('href')
+            print(f"The href value associated with the thesis is: {thesis_href_value}")
+
+            driver.get(thesis_href_value)
 
             student_element = driver.find_element(By.XPATH, "//a[@tabindex='2' and text()='Students']")
 
@@ -123,6 +120,13 @@ if 't_home.asp' in driver.current_url:
                         # Print the link
                         print("Link for matching email ID:", href_value)
                         break
+                
+                if email_id == paper_email:
+                    pass
+                else:
+                    print("Email ID not present, please enter a valid email.")
+                    driver.quit()
+                    break
 
                 # Find all the <tr> elements with <td> class "ibox_long"
                 tr_elements = driver.find_elements(By.XPATH, "//tr[td[@class='ibox_long']]")
@@ -154,6 +158,7 @@ if 't_home.asp' in driver.current_url:
 
                     # Extract the text from the element
                     submission_id_value = submission_id_element.text
+                    print(submission_id_value)
 
                     # Compare the extracted submission ID value with the given submission ID
                     if submission_id_value == submission_id:
@@ -174,20 +179,26 @@ if 't_home.asp' in driver.current_url:
                         print('current file : ',link)
                         link.click()
 
+                        time.sleep(30)
+                        break
 
                     else:
-                        print("Submission ID does not match the given submission ID")
-
                         driver.close()
 
                         # Switch to the newly opened window
                         new_window_handle = driver.window_handles[-1]
                         driver.switch_to.window(new_window_handle)
 
-            time.sleep(60)
-        else:
-            print(f"No <a> tag found for class ID {class_id}")
-    else:
-        print(f"Class ID {class_id} not found in the HTML content.")
+                if submission_id_value == submission_id:
+                    pass
+                else:
+                    print("Submission ID does not match, please enter a valid ID")
+                    driver.quit()
+                    break
+            break
+            
 else:
     print('Login failed')
+
+if not thesis_href_value:
+    print("Your thesis is not present on the platform.")
