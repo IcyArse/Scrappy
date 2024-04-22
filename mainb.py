@@ -3,15 +3,29 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import time
 from random import randint
+from dotenv import load_dotenv
+import os
+import json
 
-# Prompt user for email and password
-email = 'amran@um.edu.my'  # input("Enter your email: ")
+# Load environment variables from credentials.env file
+dotenv_path = os.path.join(os.path.dirname(__file__), 'credentials.env')
+load_dotenv(dotenv_path)
 
-# Securely ask for the password
-password = 'Superman@1000'  # getpass("Enter your password: ")
+# Get credentials from environment variables or prompt user
+email_login = os.getenv("EMAIL") #or input("Enter your email: ")
+password = os.getenv("PASSWORD") #or getpass("Enter your password: ")
 
 # Prompt user for class ID
 class_id = 43513647  # input("Enter the class ID: ")
+
+file = open("tunitfrnt\server\data.json")
+data = json.load(file)
+
+#Submission ID & paper email
+submission_id = data["submissionId"]
+print("submission_id = ", submission_id)
+paper_email = data["email"]
+print("paper email = ", paper_email)
 
 ## Set Chrome options
 chrome_options = Options()
@@ -47,7 +61,7 @@ password_field = driver.find_element(By.NAME, 'user_password')
 submit_button = driver.find_element(By.NAME, 'submit')
 
 # Enter user credentials
-email_field.send_keys(email)
+email_field.send_keys(email_login)
 password_field.send_keys(password)
 
 # Click the submit button
@@ -86,8 +100,6 @@ if 't_home.asp' in driver.current_url:
 
                 driver.implicitly_wait(20)
 
-                paper_email = 'testing1@tgl.pw'
-
                 # Find all the elements with class "ibox_long student-email"
                 email_elements = driver.find_elements(By.CSS_SELECTOR, ".ibox_long.student-email")
 
@@ -112,45 +124,65 @@ if 't_home.asp' in driver.current_url:
                         print("Link for matching email ID:", href_value)
                         break
 
+                # Find all the <tr> elements with <td> class "ibox_long"
+                tr_elements = driver.find_elements(By.XPATH, "//tr[td[@class='ibox_long']]")
+
+                # Iterate through each <tr> element
+                for tr_element in tr_elements:
+                    # Find the <a> tag within the <td> with class "ibox_long"
+                    a_tag = tr_element.find_element(By.XPATH, ".//td[@class='ibox_long']/a")
+                    
+                    # Get the href attribute value of the <a> tag
+                    href_value = a_tag.get_attribute("href")
+                    
+                    # Open the extracted link in a new tab
+                    driver.execute_script("window.open(arguments[0], '_blank')", href_value)
+
+                    # Switch to the newly opened window
+                    new_window_handle = driver.window_handles[-1]
+                    driver.switch_to.window(new_window_handle)
+
+                    print("BEFORE INFO CLASS:", driver.current_url)
+                    info_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-info-outline sidebar-paper-info-button sc-last-segment sc-segment-1"
+                    link = driver.find_element(By.XPATH, f"//div[@class='{info_class_id}']")
+
+                    link.click()
+                    time.sleep(5)
+
+                    # Find the element containing the submission ID value
+                    submission_id_element = driver.find_element(By.XPATH, "//div[@class='sc-view sc-collection-item sc-item sc-large submission-id allow-select tii-theme carta']/div[@class='value']")
+
+                    # Extract the text from the element
+                    submission_id_value = submission_id_element.text
+
+                    # Compare the extracted submission ID value with the given submission ID
+                    if submission_id_value == submission_id:
+                        print("Submission ID matches the given submission ID:", submission_id_value)
+
+                        driver.refresh()
+
+                        download_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-download sidebar-download-button sc-first-segment sc-segment-0"
+                        link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+
+                        link.click()
+
+                        time.sleep(2)
+
+                        download_class_id = "sc-view sc-list-item-view sc-collection-item sc-item sc-large tii-theme carta btn-link print-download-btn sc-regular-size"
+                        link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+
+                        print('current file : ',link)
+                        link.click()
 
 
-                link = driver.find_element(By.XPATH, f"//a[@class='similarity-open']")
+                    else:
+                        print("Submission ID does not match the given submission ID")
 
-                link.click()
-                print(driver.current_url)
+                        driver.close()
 
-                time.sleep(5)
-
-                # Switch to the newly opened window
-                new_window_handle = driver.window_handles[-1]
-                driver.switch_to.window(new_window_handle)
-
-                # Maximize the new window
-                driver.maximize_window()
-
-                # @class='sc-view sc-button-view popu p-button-view sc-large tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size popup-menu-open'
-                #button_link = driver.find_element(By.XPATH, f"//div[@aria-labelledby='sc5748-label']")
-                #driver.implicitly_wait(20)
-
-                #print(button_link)
-
-                #if button_link:
-                #    button_link.click()
-
-                download_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-download sidebar-download-button sc-first-segment sc-segment-0"
-                link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
-
-                print(link)
-
-                link.click()
-
-                time.sleep(2)
-
-                download_class_id = "sc-view sc-list-item-view sc-collection-item sc-item sc-large tii-theme carta btn-link print-download-btn sc-regular-size"
-                link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
-
-                print('current file : ',link)
-                link.click()
+                        # Switch to the newly opened window
+                        new_window_handle = driver.window_handles[-1]
+                        driver.switch_to.window(new_window_handle)
 
             time.sleep(60)
         else:
