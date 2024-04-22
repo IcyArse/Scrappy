@@ -6,6 +6,7 @@ from random import randint
 from dotenv import load_dotenv
 import os
 import json
+import logging
 
 # Load environment variables from credentials.env file
 dotenv_path = os.path.join(os.path.dirname(__file__), 'credentials.env')
@@ -16,7 +17,7 @@ email_login = os.getenv("EMAIL") #or input("Enter your email: ")
 password = os.getenv("PASSWORD") #or getpass("Enter your password: ")
 
 # Opens the json file
-file = open("data.json")
+file = open("server\\data.json")
 data = json.load(file)
 
 #Submission ID & paper email
@@ -25,8 +26,8 @@ paper_email = data["email"]
 
 ## Set Chrome options
 chrome_options = Options()
-#chrome_options.add_argument("--disable-infobars")
-#chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+chrome_options.add_argument("--headless")  # Run Chrome in headless mode
+headless = True
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--disable-gpu")
@@ -139,43 +140,100 @@ if 't_home.asp' in driver.current_url:
                     new_window_handle = driver.window_handles[-1]
                     driver.switch_to.window(new_window_handle)
 
-                    info_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-info-outline sidebar-paper-info-button sc-last-segment sc-segment-1"
-                    link = driver.find_element(By.XPATH, f"//div[@class='{info_class_id}']")
+                    driver.save_screenshot('screenshot1.png')
 
-                    link.click()
-                    time.sleep(5)
+                    if headless:
+                        setting_button_link = "sc-view sc-button-view popup-button-view sc-medium tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size"
+                        button_link = driver.find_element(By.XPATH, f"//div[@class='{setting_button_link}']")
 
-                    # Find the element containing the submission ID value
-                    submission_id_element = driver.find_element(By.XPATH, "//div[@class='sc-view sc-collection-item sc-item sc-large submission-id allow-select tii-theme carta']/div[@class='value']")
+                        button_link.click()
+                        time.sleep(1)
 
-                    # Extract the text from the element
-                    submission_id_value = submission_id_element.text
-
-                    # Compare the extracted submission ID value with the given submission ID
-                    if submission_id_value == submission_id:
-                        driver.refresh()
-
-                        download_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-download sidebar-download-button sc-first-segment sc-segment-0"
-                        link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+                        info_class_id = "sc-view sc-segment-view tii-icon-info-outline sidebar-paper-info-button sc-static-layout tii-theme carta square segment sc-last-segment sc-segment-1 sc-regular-size sc-medium"
+                        link = driver.find_element(By.XPATH, f"//div[@class='{info_class_id}']")
 
                         link.click()
 
-                        time.sleep(2)
+                        driver.save_screenshot('screenshot.png')
 
-                        download_class_id = "sc-view sc-list-item-view sc-collection-item sc-item sc-large tii-theme carta btn-link print-download-btn sc-regular-size"
-                        link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+                        # Find the element containing the submission ID value
+                        submission_id_path = "sc-view sc-collection-item sc-item sc-medium submission-id allow-select tii-theme carta"
+                        submission_id_element = driver.find_element(By.XPATH, f"//div[@class='{submission_id_path}']/div[@class='value']")
 
-                        link.click()
+                        # Extract the text from the element
+                        submission_id_value = submission_id_element.text
 
-                        time.sleep(30)
-                        break
+                        # Compare the extracted submission ID value with the given submission ID
+                        if submission_id_value == submission_id:
+                            driver.refresh()
+                            
+                            button_link = driver.find_element(By.XPATH, f"//div[@class='{setting_button_link}']")
+                            button_link.click()
 
+                            download_class_id = "sc-view sc-segment-view tii-icon-download sidebar-download-button sc-static-layout tii-theme carta square segment sc-first-segment sc-segment-0 sc-regular-size sc-medium"
+                            link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+
+                            link.click()
+
+                            time.sleep(2)
+
+                            download_class_id = "sc-view sc-list-item-view sc-collection-item sc-item sc-medium tii-theme carta btn-link print-download-btn sc-regular-size"
+                            link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+
+                            link.click()
+
+                            driver.save_screenshot('screenshot2.png')
+
+                            time.sleep(30)
+                            break
+
+                        else:
+                            driver.close()
+
+                            # Switch to the newly opened window
+                            new_window_handle = driver.window_handles[-1]
+                            driver.switch_to.window(new_window_handle)
+
+                       
                     else:
-                        driver.close()
+                        info_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-info-outline sidebar-paper-info-button sc-last-segment sc-segment-1"
+                        link = driver.find_element(By.XPATH, f"//div[@class='{info_class_id}']")
 
-                        # Switch to the newly opened window
-                        new_window_handle = driver.window_handles[-1]
-                        driver.switch_to.window(new_window_handle)
+                        link.click()
+                        time.sleep(5)
+
+                        # Find the element containing the submission ID value
+                        submission_id_path = "sc-view sc-collection-item sc-item sc-large submission-id allow-select tii-theme carta"
+                        submission_id_element = driver.find_element(By.XPATH, f"//div[@class='{submission_id_path}']/div[@class='value']")
+
+                        # Extract the text from the element
+                        submission_id_value = submission_id_element.text
+
+                        # Compare the extracted submission ID value with the given submission ID
+                        if submission_id_value == submission_id:
+                            driver.refresh()
+
+                            download_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-download sidebar-download-button sc-first-segment sc-segment-0"
+                            link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+
+                            link.click()
+
+                            time.sleep(2)
+
+                            download_class_id = "sc-view sc-list-item-view sc-collection-item sc-item sc-large tii-theme carta btn-link print-download-btn sc-regular-size"
+                            link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+
+                            link.click()
+
+                            time.sleep(30)
+                            break
+
+                        else:
+                            driver.close()
+
+                            # Switch to the newly opened window
+                            new_window_handle = driver.window_handles[-1]
+                            driver.switch_to.window(new_window_handle)
 
                 if submission_id_value == submission_id:
                     pass
