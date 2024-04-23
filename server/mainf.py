@@ -156,7 +156,6 @@ if 't_home.asp' in driver.current_url:
 
                     if headless:
                         setting_button_link = "sc-view sc-button-view popup-button-view sc-medium tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size"
-                        driver.save_screenshot('screenshot1.png')
                         button_link = driver.find_element(By.XPATH, f"//div[@class='{setting_button_link}']")
 
                         button_link.click()
@@ -166,8 +165,6 @@ if 't_home.asp' in driver.current_url:
                         link = driver.find_element(By.XPATH, f"//div[@class='{info_class_id}']")
 
                         link.click()
-
-                        driver.save_screenshot('screenshot.png')
 
                         # Find the element containing the submission ID value
                         submission_id_path = "sc-view sc-collection-item sc-item sc-medium submission-id allow-select tii-theme carta"
@@ -194,8 +191,6 @@ if 't_home.asp' in driver.current_url:
                             link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
 
                             link.click()
-
-                            driver.save_screenshot('screenshot2.png')
 
                             timeout = 60  # seconds
                             start_time = time.time()
