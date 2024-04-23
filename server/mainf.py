@@ -17,7 +17,7 @@ email_login = os.getenv("EMAIL") #or input("Enter your email: ")
 password = os.getenv("PASSWORD") #or getpass("Enter your password: ")
 
 # Opens the json file
-file = open("server\\data.json")
+file = open("data.json")
 data = json.load(file)
 
 #Submission ID & paper email
@@ -41,6 +41,18 @@ chrome_options.add_argument("--disable-features=VizDisplayCompositor")
 # Disable Chrome's automated testing detection
 # chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
 # chrome_options.add_experimental_option('useAutomationExtension', False)
+
+# Sets current directory path and relative path
+current_dir = os.getcwd()
+relative_download_dir = 'downloads'
+
+# Combine the current directory with the relative path to get the absolute path
+download_dir = os.path.join(current_dir, relative_download_dir)
+print(download_dir)
+
+# Sets the custom download directory
+prefs = {'download.default_directory' : download_dir}
+chrome_options.add_experimental_option('prefs', prefs)
 
 # Initialize Chrome WebDriver with the options
 driver = webdriver.Chrome(options=chrome_options)
@@ -140,10 +152,11 @@ if 't_home.asp' in driver.current_url:
                     new_window_handle = driver.window_handles[-1]
                     driver.switch_to.window(new_window_handle)
 
-                    driver.save_screenshot('screenshot1.png')
+                    driver.maximize_window
 
                     if headless:
                         setting_button_link = "sc-view sc-button-view popup-button-view sc-medium tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size"
+                        driver.save_screenshot('screenshot1.png')
                         button_link = driver.find_element(By.XPATH, f"//div[@class='{setting_button_link}']")
 
                         button_link.click()
@@ -184,7 +197,35 @@ if 't_home.asp' in driver.current_url:
 
                             driver.save_screenshot('screenshot2.png')
 
-                            time.sleep(30)
+                            timeout = 60  # seconds
+                            start_time = time.time()
+                            while True:
+                                # Check if the file is still being downloaded
+                                if any(filename.endswith(".pdf") for filename in os.listdir(download_dir)):
+                                    print("Download completed.")
+
+                                    # Check if the download directory is empty
+                                    if os.listdir(download_dir):
+                                        # Get the list of files in the directory
+                                        files = os.listdir(download_dir)
+                                        # Assuming only one file is present, get its name
+                                        file_name = files[0]
+                                        # Get the full file path by joining the download directory with the file name
+                                        file_path = os.path.join(download_dir, file_name)
+
+                                        filedata = {"filename":file_name,"filepath":file_path}
+                                        file_path = "filedata.json"
+
+                                        # Write data to the JSON file
+                                        with open(file_path, "w") as json_file:
+                                            json.dump(filedata, json_file)
+                                    break
+                                
+                                # Check if timeout exceeded
+                                if time.time() - start_time > timeout:
+                                    print("Download timed out.")
+                                    break
+
                             break
 
                         else:
@@ -194,7 +235,7 @@ if 't_home.asp' in driver.current_url:
                             new_window_handle = driver.window_handles[-1]
                             driver.switch_to.window(new_window_handle)
 
-                       
+                    # Only used for testing purposes   
                     else:
                         info_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-info-outline sidebar-paper-info-button sc-last-segment sc-segment-1"
                         link = driver.find_element(By.XPATH, f"//div[@class='{info_class_id}']")
