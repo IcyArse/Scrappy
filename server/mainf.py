@@ -172,76 +172,6 @@ if 't_home.asp' in driver.current_url:
                         # Extract the text from the element
                         submission_id_value = submission_id_element.text
 
-                        # Compare the extracted submission ID value with the given submission ID
-                        if submission_id_value == submission_id:
-                            driver.refresh()
-
-                            time.sleep(10)
-                            link = driver.find_element(By.XPATH, "//div[@id='sc4727']//tii-aiw-button")
-                            
-                            link.click()
-                            link.click()
-
-                            time.sleep(5)    
-
-                            # Switch to the newly opened window
-                            new_window_handle = driver.window_handles[-1]
-                            driver.switch_to.window(new_window_handle)
-
-                            # Find the top-level shadow root element
-                            tii_ai_writing_app = driver.find_element(By.CSS_SELECTOR, 'tii-ai-writing-app.hydrated')
-
-                            # Access the shadow root
-                            shadow_root = driver.execute_script('return arguments[0].shadowRoot', tii_ai_writing_app)
-
-                            # Find the next level shadow root elements recursively
-                            tii_router = shadow_root.find_element(By.CSS_SELECTOR, 'tii-router.hydrated')
-                            shadow_root_1 = driver.execute_script('return arguments[0].shadowRoot', tii_router)
-
-                            aiwa_home = shadow_root_1.find_element(By.CSS_SELECTOR, 'aiwa-home.hydrated')
-                            shadow_root_2 = driver.execute_script('return arguments[0].shadowRoot', aiwa_home)
-
-                            download_button = shadow_root_2.find_element(By.CSS_SELECTOR, 'tii-sws-download-btn-mfe.hydrated')
-                            shadow_root_3 = driver.execute_script('return arguments[0].shadowRoot', download_button)
-
-                            report_download_button = shadow_root_3.find_element(By.CSS_SELECTOR, 'button')
-                
-                            # Click on the button element
-                            download_button.click()
-                            report_download_button.click()
-                            
-                            timeout = 60  # seconds
-                            start_time = time.time()
-                            while True:
-                                # Check if the file is still being downloaded
-                                if any(filename.endswith(".pdf") for filename in os.listdir(download_dir)):
-                                    print("Download completed.")
-
-                                    # Check if the download directory is empty
-                                    if os.listdir(download_dir):
-                                        # Get the list of files in the directory
-                                        files = os.listdir(download_dir)
-                                        # Assuming only one file is present, get its name
-                                        file_name = files[0]
-                                        # Get the full file path by joining the download directory with the file name
-                                        file_path = os.path.join(download_dir, file_name)
-
-                                        filedata = {"filename":file_name,"filepath":file_path}
-                                        file_path = "filedata.json"
-
-                                        # Write data to the JSON file
-                                        with open(file_path, "w") as json_file:
-                                            json.dump(filedata, json_file)
-                                    break
-                            break
-
-                        else:
-                            driver.close()
-
-                            # Switch to the newly opened window
-                            new_window_handle = driver.window_handles[-1]
-                            driver.switch_to.window(new_window_handle)
-
                     # Only used for testing purposes   
                     else:
                         info_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-info-outline sidebar-paper-info-button sc-last-segment sc-segment-1"
@@ -257,79 +187,76 @@ if 't_home.asp' in driver.current_url:
                         # Extract the text from the element
                         submission_id_value = submission_id_element.text
  
-                        # Compare the extracted submission ID value with the given submission ID
-                        if submission_id_value == submission_id:
-                            driver.refresh()
-                            print("got to here")
+                    # Compare the extracted submission ID value with the given submission ID
+                    if submission_id_value == submission_id:
+                        driver.refresh()
                         
-                            time.sleep(10)
-                            link = driver.find_element(By.XPATH, "//div[@id='sc4727']//tii-aiw-button")
+                        time.sleep(10)
+                        link = driver.find_element(By.XPATH, "//div[@id='sc4727']//tii-aiw-button")
                             
-                            link.click()
-                            link.click()
+                        link.click()
+                        link.click()
 
-                            time.sleep(5)    
+                        time.sleep(5)    
 
-                            # Switch to the newly opened window
-                            new_window_handle = driver.window_handles[-1]
-                            driver.switch_to.window(new_window_handle)
+                        # Switch to the newly opened window
+                        new_window_handle = driver.window_handles[-1]
+                        driver.switch_to.window(new_window_handle)
 
-                                                    
-                            print("AI PAGE SHDISFJDHFJHDJFH:", driver.current_url)
-                            # Find the top-level shadow root element
-                            tii_ai_writing_app = driver.find_element(By.CSS_SELECTOR, 'tii-ai-writing-app.hydrated')
+                        # Find the top-level shadow root element
+                        tii_ai_writing_app = driver.find_element(By.CSS_SELECTOR, 'tii-ai-writing-app.hydrated')
 
-                            # Access the shadow root
-                            shadow_root = driver.execute_script('return arguments[0].shadowRoot', tii_ai_writing_app)
+                        # Access the shadow root
+                        shadow_root = driver.execute_script('return arguments[0].shadowRoot', tii_ai_writing_app)
 
-                            # Find the next level shadow root elements recursively
-                            tii_router = shadow_root.find_element(By.CSS_SELECTOR, 'tii-router.hydrated')
-                            shadow_root_1 = driver.execute_script('return arguments[0].shadowRoot', tii_router)
+                        # Find the next level shadow root elements recursively
+                        tii_router = shadow_root.find_element(By.CSS_SELECTOR, 'tii-router.hydrated')
+                        shadow_root_1 = driver.execute_script('return arguments[0].shadowRoot', tii_router)
 
-                            aiwa_home = shadow_root_1.find_element(By.CSS_SELECTOR, 'aiwa-home.hydrated')
-                            shadow_root_2 = driver.execute_script('return arguments[0].shadowRoot', aiwa_home)
+                        aiwa_home = shadow_root_1.find_element(By.CSS_SELECTOR, 'aiwa-home.hydrated')
+                        shadow_root_2 = driver.execute_script('return arguments[0].shadowRoot', aiwa_home)
 
-                            download_button = shadow_root_2.find_element(By.CSS_SELECTOR, 'tii-sws-download-btn-mfe.hydrated')
-                            shadow_root_3 = driver.execute_script('return arguments[0].shadowRoot', download_button)
+                        download_button = shadow_root_2.find_element(By.CSS_SELECTOR, 'tii-sws-download-btn-mfe.hydrated')
+                        shadow_root_3 = driver.execute_script('return arguments[0].shadowRoot', download_button)
 
-                            report_download_button = shadow_root_3.find_element(By.CSS_SELECTOR, 'button')
+                        report_download_button = shadow_root_3.find_element(By.CSS_SELECTOR, 'button')
                 
-                            # Click on the button element
-                            download_button.click()
-                            report_download_button.click()
+                        # Click on the button element
+                        download_button.click()
+                        report_download_button.click()
                             
-                            timeout = 60  # seconds
-                            start_time = time.time()
-                            while True:
-                                # Check if the file is still being downloaded
-                                if any(filename.endswith(".pdf") for filename in os.listdir(download_dir)):
-                                    print("Download completed.")
+                        timeout = 60  # seconds
+                        start_time = time.time()
+                        while True:
+                            # Check if the file is still being downloaded
+                            if any(filename.endswith(".pdf") for filename in os.listdir(download_dir)):
+                                print("Download completed.")
 
-                                    # Check if the download directory is empty
-                                    if os.listdir(download_dir):
-                                        # Get the list of files in the directory
-                                        files = os.listdir(download_dir)
-                                        # Assuming only one file is present, get its name
-                                        file_name = files[0]
-                                        # Get the full file path by joining the download directory with the file name
-                                        file_path = os.path.join(download_dir, file_name)
+                                # Check if the download directory is empty
+                                if os.listdir(download_dir):
+                                    # Get the list of files in the directory
+                                    files = os.listdir(download_dir)
+                                    # Assuming only one file is present, get its name
+                                    file_name = files[0]
+                                    # Get the full file path by joining the download directory with the file name
+                                    file_path = os.path.join(download_dir, file_name)
 
-                                        filedata = {"filename":file_name,"filepath":file_path}
-                                        file_path = "filedata.json"
+                                    filedata = {"filename":file_name,"filepath":file_path}
+                                    file_path = "filedata.json"
 
-                                        # Write data to the JSON file
-                                        with open(file_path, "w") as json_file:
-                                            json.dump(filedata, json_file)
-                                    break
-                            break
+                                    # Write data to the JSON file
+                                    with open(file_path, "w") as json_file:
+                                        json.dump(filedata, json_file)
+                                break
+                        break
 
 
-                        else:
-                            driver.close()
+                    else:
+                        driver.close()
 
-                            # Switch to the newly opened window
-                            new_window_handle = driver.window_handles[-1]
-                            driver.switch_to.window(new_window_handle)
+                        # Switch to the newly opened window
+                        new_window_handle = driver.window_handles[-1]
+                        driver.switch_to.window(new_window_handle)
 
                 if submission_id_value == submission_id:
                     pass
