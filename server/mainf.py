@@ -2,11 +2,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import time
-from random import randint
 from dotenv import load_dotenv
 import os
 import json
-import logging
 
 # Load environment variables from credentials.env file
 dotenv_path = os.path.join(os.path.dirname(__file__), 'credentials.env')
@@ -156,6 +154,7 @@ if 't_home.asp' in driver.current_url:
 
                     if headless:
                         setting_button_link = "sc-view sc-button-view popup-button-view sc-medium tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size"
+                        driver.save_screenshot('screenshotbutton.png')
                         button_link = driver.find_element(By.XPATH, f"//div[@class='{setting_button_link}']")
 
                         button_link.click()
@@ -176,22 +175,41 @@ if 't_home.asp' in driver.current_url:
                         # Compare the extracted submission ID value with the given submission ID
                         if submission_id_value == submission_id:
                             driver.refresh()
+
+                            time.sleep(10)
+                            link = driver.find_element(By.XPATH, "//div[@id='sc4727']//tii-aiw-button")
                             
-                            button_link = driver.find_element(By.XPATH, f"//div[@class='{setting_button_link}']")
-                            button_link.click()
-
-                            download_class_id = "sc-view sc-segment-view tii-icon-download sidebar-download-button sc-static-layout tii-theme carta square segment sc-first-segment sc-segment-0 sc-regular-size sc-medium"
-                            link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
-
+                            link.click()
                             link.click()
 
-                            time.sleep(2)
+                            time.sleep(5)    
 
-                            download_class_id = "sc-view sc-list-item-view sc-collection-item sc-item sc-medium tii-theme carta btn-link print-download-btn sc-regular-size"
-                            link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+                            # Switch to the newly opened window
+                            new_window_handle = driver.window_handles[-1]
+                            driver.switch_to.window(new_window_handle)
 
-                            link.click()
+                            # Find the top-level shadow root element
+                            tii_ai_writing_app = driver.find_element(By.CSS_SELECTOR, 'tii-ai-writing-app.hydrated')
 
+                            # Access the shadow root
+                            shadow_root = driver.execute_script('return arguments[0].shadowRoot', tii_ai_writing_app)
+
+                            # Find the next level shadow root elements recursively
+                            tii_router = shadow_root.find_element(By.CSS_SELECTOR, 'tii-router.hydrated')
+                            shadow_root_1 = driver.execute_script('return arguments[0].shadowRoot', tii_router)
+
+                            aiwa_home = shadow_root_1.find_element(By.CSS_SELECTOR, 'aiwa-home.hydrated')
+                            shadow_root_2 = driver.execute_script('return arguments[0].shadowRoot', aiwa_home)
+
+                            download_button = shadow_root_2.find_element(By.CSS_SELECTOR, 'tii-sws-download-btn-mfe.hydrated')
+                            shadow_root_3 = driver.execute_script('return arguments[0].shadowRoot', download_button)
+
+                            report_download_button = shadow_root_3.find_element(By.CSS_SELECTOR, 'button')
+                
+                            # Click on the button element
+                            download_button.click()
+                            report_download_button.click()
+                            
                             timeout = 60  # seconds
                             start_time = time.time()
                             while True:
@@ -215,12 +233,6 @@ if 't_home.asp' in driver.current_url:
                                         with open(file_path, "w") as json_file:
                                             json.dump(filedata, json_file)
                                     break
-                                
-                                # Check if timeout exceeded
-                                if time.time() - start_time > timeout:
-                                    print("Download timed out.")
-                                    break
-
                             break
 
                         else:
@@ -244,25 +256,73 @@ if 't_home.asp' in driver.current_url:
 
                         # Extract the text from the element
                         submission_id_value = submission_id_element.text
-
+ 
                         # Compare the extracted submission ID value with the given submission ID
                         if submission_id_value == submission_id:
                             driver.refresh()
-
-                            download_class_id = "sc-view sc-segment-view sc-large sc-static-layout tii-theme carta square segment vertical sc-regular-size tii-icon-download sidebar-download-button sc-first-segment sc-segment-0"
-                            link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
-
+                            print("got to here")
+                        
+                            time.sleep(10)
+                            link = driver.find_element(By.XPATH, "//div[@id='sc4727']//tii-aiw-button")
+                            
+                            link.click()
                             link.click()
 
-                            time.sleep(2)
+                            time.sleep(5)    
 
-                            download_class_id = "sc-view sc-list-item-view sc-collection-item sc-item sc-large tii-theme carta btn-link print-download-btn sc-regular-size"
-                            link = driver.find_element(By.XPATH, f"//div[@class='{download_class_id}']")
+                            # Switch to the newly opened window
+                            new_window_handle = driver.window_handles[-1]
+                            driver.switch_to.window(new_window_handle)
 
-                            link.click()
+                                                    
+                            print("AI PAGE SHDISFJDHFJHDJFH:", driver.current_url)
+                            # Find the top-level shadow root element
+                            tii_ai_writing_app = driver.find_element(By.CSS_SELECTOR, 'tii-ai-writing-app.hydrated')
 
-                            time.sleep(30)
+                            # Access the shadow root
+                            shadow_root = driver.execute_script('return arguments[0].shadowRoot', tii_ai_writing_app)
+
+                            # Find the next level shadow root elements recursively
+                            tii_router = shadow_root.find_element(By.CSS_SELECTOR, 'tii-router.hydrated')
+                            shadow_root_1 = driver.execute_script('return arguments[0].shadowRoot', tii_router)
+
+                            aiwa_home = shadow_root_1.find_element(By.CSS_SELECTOR, 'aiwa-home.hydrated')
+                            shadow_root_2 = driver.execute_script('return arguments[0].shadowRoot', aiwa_home)
+
+                            download_button = shadow_root_2.find_element(By.CSS_SELECTOR, 'tii-sws-download-btn-mfe.hydrated')
+                            shadow_root_3 = driver.execute_script('return arguments[0].shadowRoot', download_button)
+
+                            report_download_button = shadow_root_3.find_element(By.CSS_SELECTOR, 'button')
+                
+                            # Click on the button element
+                            download_button.click()
+                            report_download_button.click()
+                            
+                            timeout = 60  # seconds
+                            start_time = time.time()
+                            while True:
+                                # Check if the file is still being downloaded
+                                if any(filename.endswith(".pdf") for filename in os.listdir(download_dir)):
+                                    print("Download completed.")
+
+                                    # Check if the download directory is empty
+                                    if os.listdir(download_dir):
+                                        # Get the list of files in the directory
+                                        files = os.listdir(download_dir)
+                                        # Assuming only one file is present, get its name
+                                        file_name = files[0]
+                                        # Get the full file path by joining the download directory with the file name
+                                        file_path = os.path.join(download_dir, file_name)
+
+                                        filedata = {"filename":file_name,"filepath":file_path}
+                                        file_path = "filedata.json"
+
+                                        # Write data to the JSON file
+                                        with open(file_path, "w") as json_file:
+                                            json.dump(filedata, json_file)
+                                    break
                             break
+
 
                         else:
                             driver.close()
