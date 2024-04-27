@@ -159,7 +159,6 @@ if 't_home.asp' in driver.current_url:
 
                         button_link.click()
                         time.sleep(1)
-
                         info_class_id = "sc-view sc-segment-view tii-icon-info-outline sidebar-paper-info-button sc-static-layout tii-theme carta square segment sc-last-segment sc-segment-1 sc-regular-size sc-medium"
                         link = driver.find_element(By.XPATH, f"//div[@class='{info_class_id}']")
 
@@ -168,6 +167,10 @@ if 't_home.asp' in driver.current_url:
                         # Find the element containing the submission ID value
                         submission_id_path = "sc-view sc-collection-item sc-item sc-medium submission-id allow-select tii-theme carta"
                         submission_id_element = driver.find_element(By.XPATH, f"//div[@class='{submission_id_path}']/div[@class='value']")
+
+                        filename_id_path = "sc-view sc-collection-item sc-item sc-medium file-name allow-select tii-theme carta"
+                        filename_element = driver.find_element(By.XPATH, f"//div[@class='{filename_id_path}']/div[@class='value']")
+                        filename_file = (filename_element.text).split('.')[0] + '.pdf'
 
                         # Extract the text from the element
                         submission_id_value = submission_id_element.text
@@ -183,6 +186,9 @@ if 't_home.asp' in driver.current_url:
                         # Find the element containing the submission ID value
                         submission_id_path = "sc-view sc-collection-item sc-item sc-large submission-id allow-select tii-theme carta"
                         submission_id_element = driver.find_element(By.XPATH, f"//div[@class='{submission_id_path}']/div[@class='value']")
+
+                        filename_element = driver.find_element(By.XPATH, "//div[@class='sc-view sc-collection-item sc-item sc-large file-name allow-select tii-theme carta']/div[@class='value']")
+                        filename_file = (filename_element.text).split('.')[0] + '.pdf'
 
                         # Extract the text from the element
                         submission_id_value = submission_id_element.text
@@ -228,8 +234,13 @@ if 't_home.asp' in driver.current_url:
                         timeout = 60  # seconds
                         start_time = time.time()
                         while True:
+                             # Check if timeout exceeded
+                            if time.time() - start_time > timeout:
+                                print("Download timed out.")
+                                break
+
                             # Check if the file is still being downloaded
-                            if any(filename.endswith(".pdf") for filename in os.listdir(download_dir)):
+                            if any(filename == filename_file for filename in os.listdir(download_dir)):
                                 print("Download completed.")
 
                                 # Check if the download directory is empty
@@ -237,16 +248,22 @@ if 't_home.asp' in driver.current_url:
                                     # Get the list of files in the directory
                                     files = os.listdir(download_dir)
                                     # Assuming only one file is present, get its name
-                                    file_name = files[0]
+                                    file_name = filename_file
                                     # Get the full file path by joining the download directory with the file name
                                     file_path = os.path.join(download_dir, file_name)
 
-                                    filedata = {"filename":file_name,"filepath":file_path}
+                                    filedata = {submission_id:{"filename":file_name,"filepath":file_path}}
                                     file_path = "filedata.json"
+
+                                    # Read the existing JSON data from the file
+                                    with open(file_path, 'r') as file:
+                                        existing_data = json.load(file)
+
+                                    existing_data.update(filedata)
 
                                     # Write data to the JSON file
                                     with open(file_path, "w") as json_file:
-                                        json.dump(filedata, json_file)
+                                        json.dump(existing_data, json_file)
                                 break
                         break
 
