@@ -7,7 +7,7 @@ import os
 import json
 
 # Load environment variables from credentials.env file
-dotenv_path = os.path.join(os.path.dirname(__file__), 'credentials.env')
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 # Get credentials from environment variables or prompt user
