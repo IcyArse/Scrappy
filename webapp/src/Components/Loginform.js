@@ -8,6 +8,9 @@ const LoginForm = () => {
         submissionId: ''
     });
 
+    const [message, setMessage] = useState('');
+    const [message1, setMessage1] = useState('');
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -18,6 +21,9 @@ const LoginForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Remove the first message
+        setMessage1('');
     
         try {
             const response = await axios.post('http://localhost:5000/api/submit-data', formData);
@@ -29,10 +35,16 @@ const LoginForm = () => {
                 classId: '',
                 submissionId: ''
             });
+
+            // Set message to display on the webpage
+            setMessage('Data added successfully!');
     
             // Trigger file download after successful submission
             try {
                 const downloadResponse = await axios.get('http://localhost:5000/api/download-file', {
+                    params: {
+                        submissionId: response.data.submission_Id // Assuming response.data contains submissionId
+                    },
                     responseType: 'blob', // Important for downloading files
                 });
 
@@ -59,6 +71,13 @@ const LoginForm = () => {
             } catch (error) {
                 console.error('Error downloading file:', error);
             }
+ 
+            // Set message to display on the webpage
+            setMessage1('Data retrieved successfully!');
+
+             // Remove the first message
+            setMessage('');
+
         } catch (error) {
             console.error('Error sending data:', error);
         }
@@ -90,8 +109,10 @@ const LoginForm = () => {
                         required
                     />
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit">Retrieve</button>
             </form>
+            {message && <p>Give us a moment, retriving your file.</p>} {/* Display message if it exists */}
+            {message1 && <p>Your file should be downloaded! If not, please try again.</p>} {/* Display message if it exists */}
         </div>
     );
 };
