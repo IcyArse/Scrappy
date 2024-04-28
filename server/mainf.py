@@ -154,7 +154,6 @@ if 't_home.asp' in driver.current_url:
 
                     if headless:
                         setting_button_link = "sc-view sc-button-view popup-button-view sc-medium tii-icon-settings misc-popup-button-view tii-theme carta square button sc-regular-size"
-                        driver.save_screenshot('screenshotbutton.png')
                         button_link = driver.find_element(By.XPATH, f"//div[@class='{setting_button_link}']")
 
                         button_link.click()
