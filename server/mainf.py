@@ -125,10 +125,16 @@ if 't_home.asp' in driver.current_url:
                         driver.get(href_value)
                         break
                 
-                if email_id == paper_email:
-                    pass
-                else:
+                if email_id != paper_email:
                     print("Email ID not present, please enter a valid email.")
+
+                    error_file_path = "error.json"
+                    error_data = {'error': 'Email ID not present, please enter a valid email.'}
+
+                    # Write data to the JSON file
+                    with open(error_file_path, "w") as json_file:
+                        json.dump(error_data, json_file)
+                    
                     driver.quit()
                     break
 
@@ -278,14 +284,22 @@ if 't_home.asp' in driver.current_url:
                     pass
                 else:
                     print("Submission ID does not match, please enter a valid ID")
+
+                    error_file_path = "error.json"
+                    error_data = {'error': 'Submission ID does not match, please enter a valid ID'}
+
+                    # Write data to the JSON file
+                    with open(error_file_path, "w") as json_file:
+                        json.dump(error_data, json_file)
                     driver.quit()
                     break
             break
             
 else:
     print('Login failed')
-
-if not thesis_href_value:
-    print("Your thesis is not present on the platform.")
-
+try:
+    if not thesis_href_value:
+        print("Your thesis is not present on the platform.")
+except:
+    pass
 driver.quit()
