@@ -101,8 +101,8 @@ const LoginForm = () => {
     return (
         <div className="container">
             <form id="login-form" onSubmit={handleSubmit}>
-                <div className="logo-container">
-                    <img src={logo} alt="Logo" className="logo" /> {/* Display the logo */}
+                <div className="logo">
+                    <img src={logo} alt="Logo" className="logo-img" /> {/* Display the logo */}
                 </div>
                 <div className="form-group">
                     <label htmlFor="email">Email:</label>
