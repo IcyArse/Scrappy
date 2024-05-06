@@ -36,9 +36,6 @@ chrome_options.add_argument("--disable-popup-blocking")
 chrome_options.add_argument("--disable-web-security")
 chrome_options.add_argument("--disable-logging")
 chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-# Disable Chrome's automated testing detection
-# chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-# chrome_options.add_experimental_option('useAutomationExtension', False)
 
 # Sets current directory path and relative path
 current_dir = os.getcwd()
@@ -131,7 +128,8 @@ if 't_home.asp' in driver.current_url:
                         # Takes the driver to href value
                         driver.get(href_value)
                         break
-                
+                print(email_id)
+                print(paper_email) 
                 if email_id != paper_email:
                     print("Email ID not present, please enter a valid email.")
 
