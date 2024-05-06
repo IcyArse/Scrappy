@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import logo from './logo.png'; // Import your logo image
+import './LoginForm.css'; // Import CSS file for styling
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({
@@ -37,7 +39,7 @@ const LoginForm = () => {
             });
 
             // Set message to display on the webpage
-            setMessage('Data added successfully!');
+            setMessage('Give us a moment, retriving your file.');
     
             // Trigger file download after successful submission
             try {
@@ -66,18 +68,30 @@ const LoginForm = () => {
                 // Clean up: remove the anchor element
                 document.body.removeChild(a);
 
-                // Optional: notify the user that the download is complete
-                alert('File downloaded successfully!');
+                // Remove the first message
+                setMessage(null);
+
+
+                // Set message to display on the webpage
+                setMessage1('Data retrieved successfully!');
+
             } catch (error) {
                 console.error('Error downloading file:', error);
+
+                // Fetch error message from error.json
+                try {
+                    const errorResponse = await axios.get('http://localhost:5000/api/error');
+                    console.log(errorResponse.data); // Log error response
+
+                    const jsonData = JSON.parse(errorResponse.data);
+
+                    // Set error message
+                    setMessage(jsonData.download_error);
+
+                } catch (error) {
+                    console.error('Error fetching error message:', error);
+                }
             }
- 
-            // Set message to display on the webpage
-            setMessage1('Data retrieved successfully!');
-
-             // Remove the first message
-            setMessage('');
-
         } catch (error) {
             console.error('Error sending data:', error);
         }
@@ -87,6 +101,9 @@ const LoginForm = () => {
     return (
         <div className="container">
             <form id="login-form" onSubmit={handleSubmit}>
+                <div className="logo-container">
+                    <img src={logo} alt="Logo" className="logo" /> {/* Display the logo */}
+                </div>
                 <div className="form-group">
                     <label htmlFor="email">Email:</label>
                     <input
@@ -111,7 +128,7 @@ const LoginForm = () => {
                 </div>
                 <button type="submit">Retrieve</button>
             </form>
-            {message && <p>Give us a moment, retriving your file.</p>} {/* Display message if it exists */}
+            {message && <p>{message}</p>} {/* Display message if it exists */}
             {message1 && <p>Your file should be downloaded! If not, please try again.</p>} {/* Display message if it exists */}
         </div>
     );

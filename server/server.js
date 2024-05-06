@@ -11,6 +11,7 @@ app.use(express.json());
 // Define the path to the data.json file
 const dataFilePath = path.join(__dirname, "data.json");
 const filedataFilePath = path.join(__dirname, "filedata.json");
+const errorFilePath = path.join(__dirname, 'error.json');
 
 app.post("/api/submit-data", (req, res) => {
   const { email, classId, submissionId } = req.body;
@@ -77,6 +78,23 @@ app.get("/api/download-file", (req, res) => {
         }
       });
     });
+  });
+});
+
+// Route to serve the error.json file
+app.get('/api/error', (req, res) => {
+  console.log('WERE HERE')
+  // Read the error.json file and send its content as response
+  fs.readFile(errorFilePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading error.json:', err);
+      return res.status(500).json({ error: 'Failed to read error.json' });
+    }
+    if (data !== null) {
+      res.json(data);
+    } else {
+      res.json({"download_error": "Your file should be downloaded! If not, please try again."});
+    }
   });
 });
 
