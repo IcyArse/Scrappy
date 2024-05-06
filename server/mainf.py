@@ -1,10 +1,18 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
 import time
 from dotenv import load_dotenv
 import os
 import json
+
+error_file_path = "error.json"
+error_data = None
+
+# Write data to the JSON file
+with open(error_file_path, "w") as json_file:
+    json.dump(error_data, json_file)
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
 # Load environment variables from credentials.env file
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -44,13 +52,6 @@ relative_download_dir = 'downloads'
 # Combine the current directory with the relative path to get the absolute path
 download_dir = os.path.join(current_dir, relative_download_dir)
 print(download_dir)
-
-error_file_path = "error.json"
-error_data = None
-
-# Write data to the JSON file
-with open(error_file_path, "w") as json_file:
-    json.dump(error_data, json_file)
 
 # Sets the custom download directory
 prefs = {'download.default_directory' : download_dir}

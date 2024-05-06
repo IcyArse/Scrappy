@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import logo from './logo.png'; // Import your logo image
 import './LoginForm.css'; // Import CSS file for styling
+import RECAPTCHA from 'react-google-recaptcha';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({
@@ -95,7 +96,12 @@ const LoginForm = () => {
             console.error('Error sending data:', error);
         }
     };
-    
+
+    const [isCaptchaSuccessful, setIsCaptchaSuccessful] = React.useState(false);
+
+    function onChange(value) {
+        setIsCaptchaSuccessful(true);
+      }
 
     return (
         <div className="container">
@@ -125,7 +131,8 @@ const LoginForm = () => {
                         required
                     />
                 </div>
-                <button type="submit">Retrieve</button>
+                <RECAPTCHA sitekey='6LfKItMpAAAAAG3ldST3Op7SNfvBCd_9NtlYzsN8' onChange={onChange} />
+                <button disabled={!isCaptchaSuccessful} type="submit">Retrieve</button>
             </form>
             {message && <p>{message}</p>} {/* Display message if it exists */}
             {message1 && <p>Your file should be downloaded! If not, please try again.</p>} {/* Display message if it exists */}
