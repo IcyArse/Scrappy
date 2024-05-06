@@ -39,7 +39,7 @@ const LoginForm = () => {
             });
 
             // Set message to display on the webpage
-            setMessage('Give us a moment, retriving your file.');
+            setMessage('Give us a moment, retrieving your file.');
     
             // Trigger file download after successful submission
             try {
