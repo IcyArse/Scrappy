@@ -71,7 +71,6 @@ const LoginForm = () => {
                 // Remove the first message
                 setMessage(null);
 
-
                 // Set message to display on the webpage
                 setMessage1('Data retrieved successfully!');
 
