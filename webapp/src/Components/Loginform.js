@@ -8,11 +8,13 @@ const LoginForm = () => {
     const [formData, setFormData] = useState({
         email: '',
         classId: '',
-        submissionId: ''
+        submissionId: '',
+        recaptchaToken: '' // Initialize recaptchaToken state
     });
 
     const [message, setMessage] = useState('');
     const [message1, setMessage1] = useState('');
+    const [isCaptchaSuccessful, setIsCaptchaSuccessful] = React.useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -29,6 +31,13 @@ const LoginForm = () => {
         setMessage1('');
     
         try {
+            // Check if reCAPTCHA challenge has been successfully completed
+            if (!isCaptchaSuccessful) {
+                // Display error message or prevent form submission
+                setMessage('Please complete the reCAPTCHA challenge.');
+                return;
+            }
+
             const response = await axios.post('http://localhost:5000/api/submit-data', formData);
             console.log(response.data); // Log server response
     
@@ -36,7 +45,8 @@ const LoginForm = () => {
             setFormData({
                 email: '',
                 classId: '',
-                submissionId: ''
+                submissionId: '',
+                recaptchaToken: '' // Reset recaptchaToken after submission
             });
 
             // Set message to display on the webpage
@@ -97,10 +107,12 @@ const LoginForm = () => {
         }
     };
 
-    const [isCaptchaSuccessful, setIsCaptchaSuccessful] = React.useState(false);
-
     function onChange(value) {
         setIsCaptchaSuccessful(true);
+        setFormData({
+            ...formData,
+            recaptchaToken: value
+        });
       }
 
     return (
