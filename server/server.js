@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 5000;
 const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
+const axios = require('axios');
 
 app.use(cors());
 app.use(express.json());
@@ -13,10 +14,22 @@ const dataFilePath = path.join(__dirname, "data.json");
 const filedataFilePath = path.join(__dirname, "filedata.json");
 const errorFilePath = path.join(__dirname, 'error.json');
 
-app.post("/api/submit-data", (req, res) => {
-  const { email, classId, submissionId } = req.body;
+app.post("/api/submit-data", async (req, res) => {
+  const { email, classId, submissionId, recaptchaToken } = req.body;
 
   try {
+    // Verify reCAPTCHA token
+    const response = await axios.post('https://www.google.com/recaptcha/api/siteverify', null, {
+      params: {
+        secret: '6LfKItMpAAAAAENNPNWXxMTJXP1eIzsAwGUBbTUm',
+        response: recaptchaToken,
+      },
+    });
+
+    if (!response.data.success) {
+      return res.status(400).json({ error: 'reCAPTCHA verification failed' });
+    }
+
     fs.writeFileSync(
       dataFilePath,
       JSON.stringify({ email, classId, submissionId })
@@ -93,7 +106,7 @@ app.get('/api/error', (req, res) => {
     if (data !== null) {
       res.json(data);
     } else {
-      res.json({"download_error": "Your file should be downloaded! If not, please try again."});
+      res.json({"download_error": "There was a problem with our network, please try again."});
     }
   });
 });
