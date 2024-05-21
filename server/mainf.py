@@ -2,6 +2,9 @@ import time
 from dotenv import load_dotenv
 import os
 import json
+import sys
+import codecs
+sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 error_file_path = "error.json"
 error_data = None
@@ -89,13 +92,13 @@ if 't_home.asp' in driver.current_url:
     thesis_href_value = None
 
     # Find all <tr> elements
-    tr_elements = driver.find_elements(By.TAG_NAME, "tr")
+    tr_elements = driver.find_elements(By.XPATH, "//tr[@class='class']")
     
     # Loop over each <tr> element
     for tr_element in tr_elements:
 
         # Find the <td> element with the given class ID
-        td_element = driver.find_element(By.XPATH, f"//td[@class='class_name']/a")
+        td_element = tr_element.find_element(By.XPATH, f".//td[@class='class_name']/a")
 
         if td_element and td_element.text == "Thesis":
             thesis_href_value = td_element.get_attribute('href')
@@ -130,11 +133,10 @@ if 't_home.asp' in driver.current_url:
                         driver.get(href_value)
                         break
                 print(email_id)
-                print(paper_email) 
+                #print(paper_email)
                 if email_id != paper_email:
                     print("Email ID not present, please enter a valid email.")
 
-                    error_file_path = "error.json"
                     error_data = {'download_error': 'Email ID not present, please enter a valid email.'}
 
                     # Write data to the JSON file
@@ -181,7 +183,13 @@ if 't_home.asp' in driver.current_url:
 
                         filename_id_path = "sc-view sc-collection-item sc-item sc-medium file-name allow-select tii-theme carta"
                         filename_element = driver.find_element(By.XPATH, f"//div[@class='{filename_id_path}']/div[@class='value']")
-                        filename_file = (filename_element.text).split('.')[0] + '.pdf'
+                        #filename_file = (filename_element.text).split('.').pop(-1) + '.pdf'
+                        filename_file = (filename_element.text).split('.')
+                        filename_file.pop(-1)
+                        filename_file.append("pdf")
+
+                        filename_file = '.'.join(filename_file)
+                        print("edited filename: ", filename_file)
 
                         # Extract the text from the element
                         submission_id_value = submission_id_element.text
@@ -199,7 +207,12 @@ if 't_home.asp' in driver.current_url:
                         submission_id_element = driver.find_element(By.XPATH, f"//div[@class='{submission_id_path}']/div[@class='value']")
 
                         filename_element = driver.find_element(By.XPATH, "//div[@class='sc-view sc-collection-item sc-item sc-large file-name allow-select tii-theme carta']/div[@class='value']")
-                        filename_file = (filename_element.text).split('.')[0] + '.pdf'
+                        filename_file = (filename_element.text).split('.')
+                        filename_file.pop(-1)
+                        filename_file.append("pdf")
+
+                        filename_file = '.'.join(filename_file)
+                        print("edited filename: ", filename_file)
 
                         # Extract the text from the element
                         submission_id_value = submission_id_element.text
@@ -242,7 +255,7 @@ if 't_home.asp' in driver.current_url:
                         download_button.click()
                         report_download_button.click()
                             
-                        timeout = 60  # seconds
+                        timeout = 120  # seconds
                         start_time = time.time()
                         while True:
                              # Check if timeout exceeded
@@ -250,9 +263,11 @@ if 't_home.asp' in driver.current_url:
                                 print("Download timed out.")
                                 break
 
+
+                            
                             # Check if the file is still being downloaded
                             if any(filename == filename_file for filename in os.listdir(download_dir)):
-                                print("Download completed.")
+                                #print("Download completed.")
 
                                 # Check if the download directory is empty
                                 if os.listdir(download_dir):
@@ -263,12 +278,22 @@ if 't_home.asp' in driver.current_url:
                                     # Get the full file path by joining the download directory with the file name
                                     file_path = os.path.join(download_dir, file_name)
 
+                                    print("filename supposed to be: ",file_name)
+                                    print("file path", file_path)
+
                                     filedata = {submission_id:{"filename":file_name,"filepath":file_path}}
                                     file_path = "filedata.json"
 
+                                    print(filedata)
+
+                                    existing_data = {}
+
                                     # Read the existing JSON data from the file
                                     with open(file_path, 'r') as file:
-                                        existing_data = json.load(file)
+                                        try:
+                                            existing_data = json.load(file)
+                                        except:
+                                            pass
 
                                     existing_data.update(filedata)
 
@@ -291,7 +316,6 @@ if 't_home.asp' in driver.current_url:
                 else:
                     print("Submission ID does not match, please enter a valid ID")
 
-                    error_file_path = "error.json"
                     error_data = {'download_error': 'Submission ID does not match, please enter a valid ID'}
 
                     # Write data to the JSON file
@@ -303,9 +327,15 @@ if 't_home.asp' in driver.current_url:
             
 else:
     print('Login failed')
+
 try:
     if not thesis_href_value:
         print("Your thesis is not present on the platform.")
 except:
     pass
+if error_data == None:
+    # Write data to the JSON file
+    error_data = {'download_error': 'Your file should be downloaded! If not, please try again.'}
+    with open(error_file_path, "w") as json_file:
+        json.dump(error_data, json_file)
 driver.quit()
