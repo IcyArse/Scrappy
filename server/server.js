@@ -6,10 +6,13 @@ const fs = require("fs");
 const fsp = require("fs").promises;
 const path = require("path");
 const axios = require('axios');
+<<<<<<< HEAD
 
 var app_http = express(); // this one to handle http request
 
 var app_https = express(); // this to handle httpS requests.
+=======
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -19,6 +22,7 @@ const dataFilePath = path.join(__dirname, "data.json");
 const filedataFilePath = path.join(__dirname, "filedata.json");
 const errorFilePath = path.join(__dirname, 'error.json');
 
+<<<<<<< HEAD
 //Middleware to trust cloudflare's proxy
 app.set('trust proxy',true);
 
@@ -32,6 +36,9 @@ app.use((req, res, next) => {
 });
 
 app_https.post("/api/submit-data", async (req, res) => {
+=======
+app.post("/api/submit-data", async (req, res) => {
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
   const { email, classId, submissionId, recaptchaToken } = req.body;
 
   try {
@@ -67,7 +74,11 @@ app.get("/api/download-file", async (req, res) => {
     const { exec } = require('child_process');
 
     console.log("SUbM ID:", submissionId)
+<<<<<<< HEAD
     exec('python3 mainf.py', async (error, stdout, stderr) => {
+=======
+    exec('python mainf.py',  { maxBuffer: 5 * 1024 * 1024 }, async (error, stdout, stderr) => {
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
       if (error) {
         console.error(`exec error: ${error}`);
         return res.status(500).json({ error: "Failed to execute Python script" });
@@ -104,6 +115,26 @@ app.get("/api/download-file", async (req, res) => {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+<<<<<<< HEAD
+=======
+});
+
+// Route to serve the error.json file
+app.get('/api/error', async (req, res) => {
+  try {
+    console.log('WERE HERE');
+    // Read the error.json file and send its content as response
+    const data = await fsp.readFile(errorFilePath, 'utf8');
+    if (data !== null) {
+      res.json(data);
+    } else {
+      res.json({ "download_error": "There was a problem with our network, please try again." });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
 });
 
 // Route to serve the error.json file

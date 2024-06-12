@@ -38,7 +38,11 @@ const LoginForm = () => {
                 return;
             }
 
+<<<<<<< HEAD
             const response = await axios.post('https://gurulogins.com/api/submit-data', formData);
+=======
+            const response = await axios.post('http://localhost:5000/api/submit-data', formData);
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
             console.log(response.data); // Log server response
     
             // Reset form after successful submission
@@ -84,12 +88,20 @@ const LoginForm = () => {
 
                 // Set message to display on the webpage
                 setMessage1('Data retrieved successfully!');
+<<<<<<< HEAD
+=======
+
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
             } catch (error) {
                 console.error('Error downloading file:', error);
 
                 // Fetch error message from error.json
                 try {
+<<<<<<< HEAD
                     const errorResponse = await axios.get('https://gurulogins.com/api/error');
+=======
+                    const errorResponse = await axios.get('http://localhost:5000/api/error');
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
                     console.log(errorResponse.data); // Log error response
 
                     const jsonData = JSON.parse(errorResponse.data);
@@ -99,18 +111,32 @@ const LoginForm = () => {
 
                 } catch (error) {
                     console.error('Error fetching error message:', error);
+<<<<<<< HEAD
 
                     // Remove the first message
                     setMessage(null);
 
                     // Set message to display on the webpage
                     setMessage1('Data retrieved successfully!');
+=======
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
                 }
             }
         } catch (error) {
             console.error('Error sending data:', error);
         }
     };
+<<<<<<< HEAD
+=======
+
+    function onChange(value) {
+        setIsCaptchaSuccessful(true);
+        setFormData({
+            ...formData,
+            recaptchaToken: value
+        });
+      }
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
 
 
     function onChange(value) {

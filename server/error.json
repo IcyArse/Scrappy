@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"download_error": "Email ID not present, please enter a valid email."}
+=======
+{"download_error": "Your file should be downloaded! If not, please try again."}
+>>>>>>> 502af76877f6bacd063364a90bcf2d1031882800
