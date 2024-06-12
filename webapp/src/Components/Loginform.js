@@ -38,7 +38,7 @@ const LoginForm = () => {
                 return;
             }
 
-            const response = await axios.post('/api/submit-data', formData);
+            const response = await axios.post('https://gurulogins.com/api/submit-data', formData);
             console.log(response.data); // Log server response
     
             // Reset form after successful submission
@@ -54,7 +54,7 @@ const LoginForm = () => {
     
             // Trigger file download after successful submission
             try {
-                const downloadResponse = await axios.get('/api/download-file', {
+                const downloadResponse = await axios.get('https://gurulogins.com/api/download-file', {
                     params: {
                         submissionId: response.data.submission_Id // Assuming response.data contains submissionId
                     },
@@ -89,7 +89,7 @@ const LoginForm = () => {
 
                 // Fetch error message from error.json
                 try {
-                    const errorResponse = await axios.get('/api/error');
+                    const errorResponse = await axios.get('https://gurulogins.com/api/error');
                     console.log(errorResponse.data); // Log error response
 
                     const jsonData = JSON.parse(errorResponse.data);
