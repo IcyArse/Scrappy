@@ -7,20 +7,25 @@ body {
 }
 
 .logo {
-  position: absolute; /* Position image in top left corner */
-  top: 10px;
-  left: 10px;
-  width: 150px; /* Adjust width for a smaller size */
-  height: auto; /* Maintain aspect ratio */
+  position: absolute;
+    top: -50px; /* Adjust this value to position the logo vertically */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo-img {
+  width: 150px; /* Adjust the size of the logo */
+  height: auto;
 }
 
 .container {
   width: 50%;
-  margin: 50px auto;
+  margin: 100px auto;
   padding: 20px;
   background-color: #1d232a; /* Background color */
   border-radius: 4px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 h1 {
@@ -53,10 +58,10 @@ input {
   margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  padding-left: 40px; /* Adjust left padding to make space for the label */
+  padding-left: 10px; /* Adjust left padding to make space for the label */
   background-color: #1d232a; /* Background color same as page background */
   color: #838a96; /* Text color */
-  width: calc(100% - 52px); /* Adjust input width to fit container */
+  width: calc(100% - 22px); /* Adjust input width to fit container */
 }
 
 input:focus + label.hidden,
