@@ -1,10 +1,18 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
 import time
 from dotenv import load_dotenv
 import os
 import json
+
+error_file_path = "error.json"
+error_data = None
+
+# Write data to the JSON file
+with open(error_file_path, "w") as json_file:
+    json.dump(error_data, json_file)
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 
 # Load environment variables from credentials.env file
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -36,9 +44,6 @@ chrome_options.add_argument("--disable-popup-blocking")
 chrome_options.add_argument("--disable-web-security")
 chrome_options.add_argument("--disable-logging")
 chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-# Disable Chrome's automated testing detection
-# chrome_options.add_experimental_option('excludeSwitches', ['enable-automation'])
-# chrome_options.add_experimental_option('useAutomationExtension', False)
 
 # Sets current directory path and relative path
 current_dir = os.getcwd()
@@ -124,11 +129,18 @@ if 't_home.asp' in driver.current_url:
                         # Takes the driver to href value
                         driver.get(href_value)
                         break
-                
-                if email_id == paper_email:
-                    pass
-                else:
+                print(email_id)
+                print(paper_email)
+                if email_id != paper_email:
                     print("Email ID not present, please enter a valid email.")
+
+                    error_file_path = "error.json"
+                    error_data = {'download_error': 'Email ID not present, please enter a valid email.'}
+
+                    # Write data to the JSON file
+                    with open(error_file_path, "w") as json_file:
+                        json.dump(error_data, json_file)
+                    
                     driver.quit()
                     break
 
@@ -230,7 +242,7 @@ if 't_home.asp' in driver.current_url:
                         download_button.click()
                         report_download_button.click()
                             
-                        timeout = 60  # seconds
+                        timeout = 120  # seconds
                         start_time = time.time()
                         while True:
                              # Check if timeout exceeded
@@ -278,6 +290,13 @@ if 't_home.asp' in driver.current_url:
                     pass
                 else:
                     print("Submission ID does not match, please enter a valid ID")
+
+                    error_file_path = "error.json"
+                    error_data = {'download_error': 'Submission ID does not match, please enter a valid ID'}
+
+                    # Write data to the JSON file
+                    with open(error_file_path, "w") as json_file:
+                        json.dump(error_data, json_file)
                     driver.quit()
                     break
             break
@@ -285,7 +304,9 @@ if 't_home.asp' in driver.current_url:
 else:
     print('Login failed')
 
-if not thesis_href_value:
-    print("Your thesis is not present on the platform.")
-
+try:
+    if not thesis_href_value:
+        print("Your thesis is not present on the platform.")
+except:
+    pass
 driver.quit()
