@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import logo from './logo.png'; // Import your logo image
+import './LoginForm.css'; // Import CSS file for styling
+import RECAPTCHA from 'react-google-recaptcha';
 
 const LoginForm = () => {
     const [formData, setFormData] = useState({
         email: '',
         classId: '',
-        submissionId: ''
+        submissionId: '',
+        recaptchaToken: '' // Initialize recaptchaToken state
     });
 
     const [message, setMessage] = useState('');
     const [message1, setMessage1] = useState('');
+    const [isCaptchaSuccessful, setIsCaptchaSuccessful] = React.useState(false);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -26,22 +31,30 @@ const LoginForm = () => {
         setMessage1('');
     
         try {
-            const response = await axios.post('http://localhost:5000/api/submit-data', formData);
+            // Check if reCAPTCHA challenge has been successfully completed
+            if (!isCaptchaSuccessful) {
+                // Display error message or prevent form submission
+                setMessage('Please complete the reCAPTCHA challenge.');
+                return;
+            }
+
+            const response = await axios.post('/api/submit-data', formData);
             console.log(response.data); // Log server response
     
             // Reset form after successful submission
             setFormData({
                 email: '',
                 classId: '',
-                submissionId: ''
+                submissionId: '',
+                recaptchaToken: '' // Reset recaptchaToken after submission
             });
 
             // Set message to display on the webpage
-            setMessage('Data added successfully!');
+            setMessage('Give us a moment, retrieving your file.');
     
             // Trigger file download after successful submission
             try {
-                const downloadResponse = await axios.get('http://localhost:5000/api/download-file', {
+                const downloadResponse = await axios.get('/api/download-file', {
                     params: {
                         submissionId: response.data.submission_Id // Assuming response.data contains submissionId
                     },
@@ -66,27 +79,54 @@ const LoginForm = () => {
                 // Clean up: remove the anchor element
                 document.body.removeChild(a);
 
-                // Optional: notify the user that the download is complete
-                alert('File downloaded successfully!');
+                // Remove the first message
+                setMessage(null);
+
+                // Set message to display on the webpage
+                setMessage1('Data retrieved successfully!');
             } catch (error) {
                 console.error('Error downloading file:', error);
+
+                // Fetch error message from error.json
+                try {
+                    const errorResponse = await axios.get('/api/error');
+                    console.log(errorResponse.data); // Log error response
+
+                    const jsonData = JSON.parse(errorResponse.data);
+
+                    // Set error message
+                    setMessage(jsonData.download_error);
+
+                } catch (error) {
+                    console.error('Error fetching error message:', error);
+
+                    // Remove the first message
+                    setMessage(null);
+
+                    // Set message to display on the webpage
+                    setMessage1('Data retrieved successfully!');
+                }
             }
- 
-            // Set message to display on the webpage
-            setMessage1('Data retrieved successfully!');
-
-             // Remove the first message
-            setMessage('');
-
         } catch (error) {
             console.error('Error sending data:', error);
         }
     };
-    
 
+
+    function onChange(value) {
+        setIsCaptchaSuccessful(true);
+        setFormData({
+            ...formData,
+            recaptchaToken: value
+        });
+      }
+    
     return (
         <div className="container">
             <form id="login-form" onSubmit={handleSubmit}>
+                <div className="logo">
+                    <img src={logo} alt="Logo" className="logo-img" /> {/* Display the logo */}
+                </div>
                 <div className="form-group">
                     <label htmlFor="email">Email:</label>
                     <input
@@ -109,9 +149,10 @@ const LoginForm = () => {
                         required
                     />
                 </div>
-                <button type="submit">Retrieve</button>
+                <RECAPTCHA sitekey='6LfKItMpAAAAAG3ldST3Op7SNfvBCd_9NtlYzsN8' onChange={onChange} />
+                <button disabled={!isCaptchaSuccessful} type="submit">Retrieve</button>
             </form>
-            {message && <p>Give us a moment, retriving your file.</p>} {/* Display message if it exists */}
+            {message && <p>{message}</p>} {/* Display message if it exists */}
             {message1 && <p>Your file should be downloaded! If not, please try again.</p>} {/* Display message if it exists */}
         </div>
     );
